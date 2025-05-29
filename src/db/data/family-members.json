@@ -1,0 +1,82 @@
+[
+  {
+    "name": "John Smith",
+    "dob": "1950-01-01",
+    "dod": "2020-01-01",
+    "parentId": null,
+    "gender": "male",
+    "imageUrl": "https://example.com/john.jpg",
+    "notes": "Patriarch of the Smith family",
+    "position": { "x": 0, "y": 0 }
+  },
+  {
+    "name": "Mary Smith",
+    "dob": "1952-02-02",
+    "dod": "2021-02-02",
+    "parentId": null,
+    "gender": "female",
+    "imageUrl": "https://example.com/mary.jpg",
+    "notes": "Matriarch of the Smith family",
+    "position": { "x": 1, "y": 0 }
+  },
+  {
+    "name": "James Smith",
+    "dob": "1975-03-03",
+    "dod": null,
+    "parentId": "1",
+    "gender": "male",
+    "imageUrl": "https://example.com/james.jpg",
+    "notes": "Eldest son of John and Mary",
+    "position": { "x": 0, "y": 1 }
+  },
+  {
+    "name": "Patricia Smith",
+    "dob": "1977-04-04",
+    "dod": null,
+    "parentId": "1",
+    "gender": "female",
+    "imageUrl": "https://example.com/patricia.jpg",
+    "notes": "Daughter of John and Mary",
+    "position": { "x": 1, "y": 1 }
+  },
+  {
+    "name": "Michael Smith",
+    "dob": "2000-05-05",
+    "dod": null,
+    "parentId": "3",
+    "gender": "male",
+    "imageUrl": "https://example.com/michael.jpg",
+    "notes": "Son of James and his wife",
+    "position": { "x": 0, "y": 2 }
+  },
+  {
+    "name": "Emily Smith",
+    "dob": "2002-06-06",
+    "dod": null,
+    "parentId": "3",
+    "gender": "female",
+    "imageUrl": "https://example.com/emily.jpg",
+    "notes": "Daughter of James and his wife",
+    "position": { "x": 1, "y": 2 }
+  },
+  {
+    "name": "Sophia Smith",
+    "dob": "2020-07-07",
+    "dod": null,
+    "parentId": "5",
+    "gender": "female",
+    "imageUrl": "https://example.com/sophia.jpg",
+    "notes": "Daughter of Michael",
+    "position": { "x": 0, "y": 3 }
+  },
+  {
+    "name": "Liam Smith",
+    "dob": "2021-08-08",
+    "dod": null,
+    "parentId": "6",
+    "gender": "male",
+    "imageUrl": "https://example.com/liam.jpg",
+    "notes": "Son of Emily",
+    "position": { "x": 1, "y": 3 }
+  }
+]
