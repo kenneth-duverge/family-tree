@@ -1,30 +1,36 @@
 'use client';
 
-import { Link, useLoaderData } from 'react-router';
-import { useState, useRef, useEffect } from 'react';
-import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
-import { Plus, ZoomIn, ZoomOut, Maximize2 } from 'lucide-react';
+import { Maximize2, Plus, ZoomIn, ZoomOut } from 'lucide-react';
+import { useRef, useState } from 'react';
+import { Link } from 'react-router';
+import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
 
 import { Button } from '@/components/ui/button';
 
 import { AddMemberForm } from '@/components/add-member-form';
 import { FamilyMember } from '@/components/family-member';
 import { TreeConnector } from '@/components/tree-connector';
+import { useQuery } from '@tanstack/react-query';
 
 interface Member {
   id?: string;
   name: string;
-  birthYear: string;
+  dob: string;
+  dod?: string;
   parentid?: string;
   position: { x: number; y: number };
   notes?: string;
   gender?: string;
-  deathYear?: string;
   imageUrl?: string;
 }
 
 export default function FamilyTreePage() {
-  const { members } = useLoaderData<{ members: Member[] }>();
+  const { data, isLoading } = useQuery({
+    queryKey: ['members'],
+    queryFn: () => {
+      return fetch('/api/family-members').then((res) => res.json());
+    },
+  });
   const [showForm, setShowForm] = useState(false);
   const transformComponentRef = useRef(null);
 
@@ -47,7 +53,7 @@ export default function FamilyTreePage() {
 
     if (!parentId) {
       // If no parent, position around the center top of the canvas
-      const existingRoots = members.filter((m) => !m.parentid);
+      const existingRoots = data?.members.filter((m) => !m.parentid);
       const rootIndex = existingRoots.length;
       const rootOffset = rootIndex * 250 - (existingRoots.length * 250) / 2;
       return {
@@ -56,11 +62,11 @@ export default function FamilyTreePage() {
       };
     }
 
-    const parent = members.find((m) => m.id === parentId);
+    const parent = data?.members.find((m) => m.id === parentId);
     if (!parent) return { x: centerX, y: 200 };
 
     // Find siblings (children of the same parent)
-    const siblings = members.filter((m) => m.parentid === parentId);
+    const siblings = data?.members.filter((m) => m.parentid === parentId);
     const siblingIndex = siblings.length;
     const siblingOffset = siblingIndex * 250 - (siblings.length * 250) / 2;
 
@@ -71,10 +77,10 @@ export default function FamilyTreePage() {
   };
 
   const centerTree = (centerCallback: (scale: number) => void) => {
-    if (!members.length) return;
+    if (!data?.members.length) return;
 
     // Calculate the bounding box of all nodes
-    const bounds = members.reduce(
+    const bounds = data.members.reduce(
       (acc, member) => {
         return {
           minX: Math.min(acc.minX, member.position.x),
@@ -119,14 +125,7 @@ export default function FamilyTreePage() {
       </div>
 
       <div className="relative h-[calc(100vh-8rem)] w-full rounded-lg border bg-muted/50 overflow-hidden">
-        <TransformWrapper
-          initialScale={0.8}
-          minScale={0.2}
-          maxScale={2}
-          initialPositionX={100}
-          initialPositionY={200}
-          centerOnInit
-        >
+        <TransformWrapper limitToBounds={false} initialScale={1} centerOnInit>
           {({ zoomIn, zoomOut, resetTransform, setTransform }) => (
             <>
               <div className="absolute right-4 top-4 z-10 flex gap-2">
@@ -170,21 +169,21 @@ export default function FamilyTreePage() {
                 </Button>
               </div>
 
-              <TransformComponent wrapperClass="!w-full !h-full" contentClass="!w-full !h-full">
+              <TransformComponent>
                 <div className="relative w-[3000px] h-[2000px]">
-                  {members.length === 0 ? (
+                  {data?.members.length === 0 ? (
                     <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
                       Add your first family member to start building the tree
                     </div>
                   ) : (
                     <>
                       {/* Draw connections first so they appear behind nodes */}
-                      {members.map((member) =>
-                        member.parentid ? (
+                      {/* {data?.members?.map((member) =>
+                        member.parentId ? (
                           <TreeConnector
-                            key={`${member.id}-${member.parentid}`}
+                            key={`${member.id}-${member.parentId}`}
                             from={
-                              members.find((m) => m.id === member.parentid)?.position || {
+                              data.members.find((m) => m.id === member.parentId)?.position || {
                                 x: 0,
                                 y: 0,
                               }
@@ -192,20 +191,23 @@ export default function FamilyTreePage() {
                             to={member.position || { x: 0, y: 0 }}
                           />
                         ) : null
-                      )}
+                      )} */}
 
-                      {members.map((member) => (
-                        <FamilyMember
-                          key={member.id}
-                          member={member}
-                          style={{
-                            position: 'absolute',
-                            left: `${member.position?.x}px`,
-                            top: `${member.position?.y}px`,
-                            transform: 'translate(-50%, -50%)',
-                          }}
-                        />
-                      ))}
+                      {data?.members?.map((member, i) => {
+                        console.log(member.position);
+                        return (
+                          <FamilyMember
+                            key={member.id}
+                            member={member}
+                            style={{
+                              position: 'absolute',
+                              left: `${member.position.x + window.innerWidth / 2 + i * 250}px`,
+                              top: `${member.position.y + 250 + i * 250}px`,
+                              transform: 'translate(-50%, -50%)',
+                            }}
+                          />
+                        );
+                      })}
                     </>
                   )}
                 </div>
@@ -219,7 +221,7 @@ export default function FamilyTreePage() {
         open={showForm}
         onOpenChange={setShowForm}
         onSubmit={addMember}
-        members={members}
+        members={data?.members}
       />
     </div>
   );

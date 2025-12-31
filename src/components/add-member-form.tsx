@@ -101,9 +101,9 @@ export function AddMemberForm({ open, onOpenChange, onSubmit, members }: AddMemb
                 name="birthYear"
                 render={({ field }) => (
                   <FormItem className="w-full">
-                    <FormLabel>Birth Year</FormLabel>
+                    <FormLabel>Date of Birth</FormLabel>
                     <FormControl>
-                      <Input placeholder="1960" {...field} />
+                      <Input placeholder="Jan 1, 1960" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -114,9 +114,9 @@ export function AddMemberForm({ open, onOpenChange, onSubmit, members }: AddMemb
                 name="deathYear"
                 render={({ field }) => (
                   <FormItem className="w-full">
-                    <FormLabel>Death Year</FormLabel>
+                    <FormLabel>Date of Death</FormLabel>
                     <FormControl>
-                      <Input placeholder="2018" {...field} />
+                      <Input placeholder="Jan 1, 2018" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -136,7 +136,7 @@ export function AddMemberForm({ open, onOpenChange, onSubmit, members }: AddMemb
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {members.map((member) => (
+                      {members?.map((member) => (
                         <SelectItem key={member.id} value={member.name}>
                           {member.name}
                         </SelectItem>

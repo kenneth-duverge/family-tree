@@ -1,38 +1,31 @@
-import { serve, sql } from 'bun';
-import { z } from 'zod';
-import index from './index.html';
+import { serve } from 'bun';
 
-const memberSchema = z.object({
-  id: z.string().optional().default(Math.random().toString(36).substr(2, 9)),
-  name: z.string(),
-  birthYear: z.string(),
-  parentId: z.string().nullable(),
-  position: z.object({
-    x: z.number(),
-    y: z.number(),
-  }),
-});
+import { familyMembers, familyMemberSchema } from './db/schema/family-members';
+
+import { db } from './db';
+
+import index from './index.html';
 
 const server = serve({
   routes: {
     // Serve index.html for all unmatched routes.
     '/*': index,
 
-    '/api/members': {
+    '/api/family-members': {
       async GET(req) {
-        const members = await sql`SELECT * FROM members`;
+        const members = await db.select().from(familyMembers);
         return Response.json({
           members,
         });
       },
-    },
-
-    '/api/members/add': {
       async POST(req) {
-        const { name, birthYear, parentId, position } = await req.json();
-        const parsed = memberSchema.parse({ name, birthYear, parentId, position });
+        const body = await req.json();
+        const parsed = familyMemberSchema.parse(body);
+        const { id, ...memberData } = parsed;
 
-        await sql`INSERT INTO members (name, birthYear, parentId, position) VALUES (${parsed.name}, ${parsed.birthYear}, ${parsed.parentId}, ${parsed.position})`;
+        await db
+          .insert(familyMembers)
+          .values(memberData as unknown as typeof familyMembers.$inferInsert);
 
         return Response.json(
           {

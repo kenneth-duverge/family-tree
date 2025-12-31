@@ -5,33 +5,31 @@
  * It is included in `src/index.html`.
  */
 
-import './index.css';
+import '../styles/globals.css';
 
 import { createRoot } from 'react-dom/client';
 import { StrictMode } from 'react';
-import { BrowserRouter, Routes, Route, Link } from 'react-router';
+import { BrowserRouter, Routes, Route } from 'react-router';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
+import Home from './app/index.tsx';
 import TreeEditor from './app/tree-editor.tsx';
-import Home from './app/home.tsx';
-import { APITester } from './APITester.tsx';
+import APITester from './app/api-tester.tsx';
+
+const queryClient = new QueryClient();
 
 const elem = document.getElementById('root')!;
 const app = (
   <StrictMode>
-    <BrowserRouter>
-      <Routes>
-        <Route index path="/" element={<Home />} />
-        <Route
-          loader={async () => {
-            const response = await fetch('/api/members');
-            return response.json();
-          }}
-          path="/dashboard"
-          element={<TreeEditor />}
-        />
-        <Route path="/api-tester" element={<APITester />} />
-      </Routes>
-    </BrowserRouter>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <Routes>
+          <Route index path="/" element={<Home />} />
+          <Route path="/dashboard" element={<TreeEditor />} />
+          <Route path="/api-tester" element={<APITester />} />
+        </Routes>
+      </BrowserRouter>
+    </QueryClientProvider>
   </StrictMode>
 );
 
